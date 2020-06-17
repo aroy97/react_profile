@@ -4,6 +4,8 @@ import './login.css';
 import { Link } from 'react-router-dom';
 import { sha256 } from 'js-sha256';
 import en from '../../environment';
+import { stateToProps, dispatchToProps } from '../../reducerFunction';
+import { connect } from 'react-redux';
 
 class Login extends Component {
     constructor(props) {
@@ -11,10 +13,12 @@ class Login extends Component {
         this.onChangeUsername = this.onChangeUsername.bind(this);
         this.onchangePassword = this.onchangePassword.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
+        this.onChangeRemember = this.onChangeRemember.bind(this);
         this.state = {
             username: '',
             password: '',
-            modalShow: false
+            modalShow: false,
+            remember: false
         }
     }
 
@@ -26,7 +30,7 @@ class Login extends Component {
         }
         function remcl(){
             let parent = this.parentNode.parentNode;
-            if(this.value == ""){
+            if(this.value === ""){
                 parent.classList.remove("focus");
             }
         }
@@ -48,6 +52,12 @@ class Login extends Component {
         })
     }
 
+    onChangeRemember(e) {
+        this.setState({
+            remember: e.target.checked
+        })
+    }
+
     onSubmit(e) {
         e.preventDefault();
         let payload = {
@@ -62,10 +72,11 @@ class Login extends Component {
             this.setState({
                 modalShow: false
             })
-            if (res.status == 200) {
+            if (res.status === 200) {
+                this.props.setToken(res.data['token']);
                 console.log('Login Successful');
-                if (this.rememberme == true) {
-                localStorage.setItem('userToken', res.token);
+                if (this.state.remember === true) {
+                localStorage.setItem('userToken', res.data.token);
                 }
             } else {
                 console.log('Login Failed');
@@ -88,14 +99,14 @@ class Login extends Component {
                 {this.state.modalShow && <div className="spinner-body">
                     <div className="spinner-border text-success" role="status"></div>
                 </div>}
-                <img className="wave" src={require("../../assets/wave.png")}/>
+                <img className="wave" src={require("../../assets/wave.png")} alt = "Background"/>
                 <div className="container">
                     <div className="img">
-                        <img src={require("../../assets/bg.svg")}/>
+                        <img src={require("../../assets/bg.svg")} alt = "Mobile"/>
                     </div>
                     <div className="login-content">
                         <form onSubmit = {this.onSubmit}>
-                            <img src={require("../../assets/avatar.svg")}/>
+                            <img src={require("../../assets/avatar.svg")} alt= "Avatar"/>
                             <h2 className="title">Welcome</h2>
                             <div className="input-div one">
                             <div className="i">
@@ -106,16 +117,26 @@ class Login extends Component {
                                     <input type="text" value = {this.state.username} onChange = {this.onChangeUsername} className="input"/>
                             </div>
                             </div>
-                            <div className="input-div pass">
-                            <div className="i"> 
-                                    <i className="fas fa-lock"></i>
+                                <div className="input-div pass">
+                                <div className="i"> 
+                                        <i className="fas fa-lock"></i>
+                                </div>
+                                <div className="div">
+                                        <h5>Password</h5>
+                                        <input type="password" value = {this.state.password} onChange = {this.onchangePassword} className="input"/>
+                                </div>
                             </div>
-                            <div className="div">
-                                    <h5>Password</h5>
-                                    <input type="password" value = {this.state.password} onChange = {this.onchangePassword} className="input"/>
+                            <div className = "row">
+                                <div className = "col-sm-6 col-xs-12">
+                                    <div className = "remember">
+                                        <input type = "checkbox" checked = {this.state.remember} onChange = {this.onChangeRemember} />
+                                            &nbsp;<label>Remember Me</label>
+                                    </div>
+                                </div>
+                                <div className = "col-sm-6 col-xs-12">
+                                <Link to = {"/forgotpass"}>Forgot Password?</Link>
+                                </div>
                             </div>
-                            </div>
-                            <a href="#">Forgot Password?</a>
                             <input type="submit" className="btn" value="Login"/>
                         </form>
                     </div>
@@ -124,4 +145,4 @@ class Login extends Component {
         )
     }
 }
-export default Login
+export default connect(stateToProps,dispatchToProps) (Login)
