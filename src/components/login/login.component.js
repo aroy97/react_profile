@@ -7,7 +7,6 @@ import en from '../../environment';
 import { stateToProps, dispatchToProps } from '../../reducerFunction';
 import { connect } from 'react-redux';
 import history from '../../history';
-import { sessionReducer } from '../../reducer/session-reducer';
 
 class Login extends Component {
     constructor(props) {
@@ -16,11 +15,13 @@ class Login extends Component {
         this.onchangePassword = this.onchangePassword.bind(this);
         this.onSubmitLogin = this.onSubmitLogin.bind(this);
         this.onChangeRemember = this.onChangeRemember.bind(this);
+        this.checkToken = this.checkToken.bind(this);
         this.state = {
             username: '',
             password: '',
             modalShow: false,
-            remember: false
+            remember: false,
+            token: localStorage.getItem('sessionToken')
         }
     }
 
@@ -40,7 +41,38 @@ class Login extends Component {
             input.addEventListener("focus", addcl);
             input.addEventListener("blur", remcl);
         });
+        if (this.state.token!= '' || this.state.token != null) {
+            this.checkToken();
+        }
+
     }
+
+    checkToken() {
+        let payload = {
+          "token": this.state.token
+        };
+        this.setState({
+            modalShow: true
+        });
+        axios.post(en.url + '/user/get_session', payload, en.authentication)
+        .then((res) => {
+            this.setState({
+                modalShow: false
+            });
+            if (res.status === 200) {
+                console.log(res.data);
+                this.props.setSession(res.data);
+                this.setState({
+                    modalShow: false
+                })
+                history.push('/profile');
+            }
+        })
+        .catch(function(error){
+            alert("Something went wrong");
+            console.log(error);
+        });
+      }
 
     onChangeUsername(e) {
         this.setState({
@@ -82,25 +114,10 @@ class Login extends Component {
                     if(this.state.remember){
                         localStorage.setItem('sessionToken',res.data.token);
                     }
-                    let sessionpayload = {
-                        "token": res.data.token
-                    }
-                    console.log(sessionpayload); 
-                    axios.post(en.url + "/user/get_session",sessionpayload, en.authentication)
-                    .then(res => {
-                        if(res.status === 200){
-                            console.log(res.data);
-                            this.props.setSession(res.data);
-                            this.setState({
-                                modalShow: false
-                            })
-                            history.push('/register');
-                        }
-                    })
-                    .catch(function(error){
-                        alert("Something went wrong");
-                        console.log(error);
+                    this.setState({
+                        token: res.data.token
                     });
+                    this.checkToken();
                 }
             }
             else{
@@ -159,7 +176,7 @@ class Login extends Component {
                                     <Link to={"/register"} className="register-link">New User? Click here</Link>
                                 </div>
                                 <div className="col-xs-12 col-sm-6">
-                                    <Link to={"/forgot_pass"} className="forgot-link">Forgot Password?</Link>
+                                    <Link to={"/forgotpassword"} className="forgot-link">Forgot Password?</Link>
                                 </div>
                             </div>
                             <input type="submit" className="btn" value="Login" />

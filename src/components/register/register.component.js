@@ -166,7 +166,8 @@ class Register extends Component {
                     "password": sha256(this.state.password),
                     "email": this.state.emailid,
                     "pic": this.state.img,
-                    "mobile": this.state.mobile
+                    "mobile": this.state.mobile,
+                    "status": "Hey There! I am using React."
                     }
                     this.setState({
                         modalShow: true

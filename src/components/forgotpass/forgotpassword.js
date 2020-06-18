@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import './forgotpass.css';
 import { Link } from 'react-router-dom';
 import en from '../../environment';
 import history from '../../history';

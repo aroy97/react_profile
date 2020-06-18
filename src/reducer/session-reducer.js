@@ -9,7 +9,7 @@ export const sessionReducer = (state = initialState, action) => {
     switch (action.type) {
         case "SessionModule":
             return {
-                userName: action.sessionData.userName,
+                userName: action.sessionData.username,
                 profilePic: action.sessionData.profilePic,
                 lastLoggedIn: action.sessionData.lastLoggedIn
             }
