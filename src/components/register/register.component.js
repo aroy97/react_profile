@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import './register.css';
+import './register.scss';
 import { Link } from 'react-router-dom';
 import { sha256 } from 'js-sha256';
 import en from '../../environment';
@@ -136,6 +136,8 @@ class Register extends Component {
                     modalShow: false
                 })
             })
+        } else {
+            alert('Please enter a valid email id');
         }
     }
 
@@ -162,9 +164,7 @@ class Register extends Component {
                     let payload = {
                     "username": this.state.name,
                     "password": sha256(this.state.password),
-                    "role": "user",
                     "email": this.state.emailid,
-                    "location": "kolkata",
                     "pic": this.state.img,
                     "mobile": this.state.mobile
                     }
@@ -211,10 +211,11 @@ class Register extends Component {
                 {this.state.modalShow && <div className="spinner-body">
                     <div className="spinner-border text-success" role="status"></div>
                 </div>}
-                <img className="wave" src={require("../../assets/wave.png")}/>
-                <div className="container">
+                <div className="login-body">
+                    <img className="wave" src={require("../../assets/wave.png")}/>
+                    <div className="container">
                     <div className="img">
-                        <img src={require("../../assets/bg.svg")}/>
+                        <img src={require("../../assets/login.svg")}/>
                     </div>
                     {this.state.otpchecked && this.state.otpsent &&
                     <div className="login-content">
@@ -257,7 +258,7 @@ class Register extends Component {
                                 </div>
                             </div>
                             <div className="link-box">
-                                <a className="a-right" href="#">Already Have an Account? Login</a>
+                                <Link className="a-right" to={"/"}>Already Have an Account? Login</Link>
                             </div>
                             <input type="submit" className="btn" value="Register"/>
                         </form>
@@ -274,6 +275,9 @@ class Register extends Component {
                                     <h5>Email</h5>
                                     <input type="text" className="input" value={this.state.emailid} onChange = {this.changeEmailId} name="Email"/>
                                 </div>
+                            </div>
+                            <div className="link-box">
+                                <Link className="a-right" to = {"/"}>Already Have an Account? Login</Link>
                             </div>
                             <input type="submit" className="btn" value="Send OTP"/>
                         </form>
@@ -297,6 +301,7 @@ class Register extends Component {
                             <input type="submit" className="btn" value="Validate OTP"/>
                         </form>
                     </div>}
+                </div>
                 </div>
             </div>
         )

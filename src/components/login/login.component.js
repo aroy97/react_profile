@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import './login.css';
+import './login.scss';
 import { Link } from 'react-router-dom';
 import { sha256 } from 'js-sha256';
 import en from '../../environment';
 import { stateToProps, dispatchToProps } from '../../reducerFunction';
 import { connect } from 'react-redux';
+import history from '../../history';
+import { sessionReducer } from '../../reducer/session-reducer';
 
 class Login extends Component {
     constructor(props) {
         super(props);
         this.onChangeUsername = this.onChangeUsername.bind(this);
         this.onchangePassword = this.onchangePassword.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
+        this.onSubmitLogin = this.onSubmitLogin.bind(this);
         this.onChangeRemember = this.onChangeRemember.bind(this);
         this.state = {
             username: '',
@@ -58,7 +60,7 @@ class Login extends Component {
         })
     }
 
-    onSubmit(e) {
+    onSubmitLogin(e) {
         e.preventDefault();
         let payload = {
             'email': this.state.username,
@@ -67,82 +69,106 @@ class Login extends Component {
         this.setState({
             modalShow: true
         })
-        axios.post(en.url + '/user/login', payload, en.authentication)
-        .then((res) => {
-            this.setState({
-                modalShow: false
-            })
-            if (res.status === 200) {
-                this.props.setToken(res.data['token']);
-                console.log('Login Successful');
-                if (this.state.remember === true) {
-                localStorage.setItem('userToken', res.data.token);
+        axios.post(en.url + "/user/login",payload, en.authentication)
+        .then(res => {
+            console.log(res.data.token);
+            if(res.status === 200){
+                console.log(payload);
+                if(payload['email'] === "admin@admin"){
+                    history.push('/admin');
                 }
-            } else {
-                console.log('Login Failed');
+                else{
+                    this.props.setToken(res.data.token);
+                    if(this.state.remember){
+                        localStorage.setItem('sessionToken',res.data.token);
+                    }
+                    let sessionpayload = {
+                        "token": res.data.token
+                    }
+                    console.log(sessionpayload); 
+                    axios.post(en.url + "/user/get_session",sessionpayload, en.authentication)
+                    .then(res => {
+                        if(res.status === 200){
+                            console.log(res.data);
+                            this.props.setSession(res.data);
+                            this.setState({
+                                modalShow: false
+                            })
+                            history.push('/register');
+                        }
+                    })
+                    .catch(function(error){
+                        alert("Something went wrong");
+                        console.log(error);
+                    });
+                }
             }
-            this.setState({
-                username: '',
-                password: ''
-            });
-        }).catch((err) => {
-            this.setState({
-                modalShow: false
-            })
-            console.log(err);
+            else{
+                this.setState({
+                    modalShow: false
+                })
+                alert("Incorrect username or password");
+            }
         })
+        .catch(function(error){
+            alert("Something went wrong");
+            console.log(error);
+        });
     }
 
     render() {
-        return (
+        return(
             <div>
                 {this.state.modalShow && <div className="spinner-body">
                     <div className="spinner-border text-success" role="status"></div>
                 </div>}
-                <img className="wave" src={require("../../assets/wave.png")} alt = "Background"/>
+                <div className="login-body">
+                <img className="wave" src={require("../../assets/wave.png")} alt="wave"/>    
                 <div className="container">
                     <div className="img">
-                        <img src={require("../../assets/bg.svg")} alt = "Mobile"/>
+                        <img src={require("../../assets/login.svg")} alt="background"/>
                     </div>
                     <div className="login-content">
-                        <form onSubmit = {this.onSubmit}>
-                            <img src={require("../../assets/avatar.svg")} alt= "Avatar"/>
+                        <form onSubmit={this.onSubmitLogin}>
+                            <img src={require("../../assets/avatar.svg")} alt="avatar"/>
                             <h2 className="title">Welcome</h2>
                             <div className="input-div one">
-                            <div className="i">
-                                    <i className="fas fa-user"></i>
+                                <div className="i">
+                                        <i className="fas fa-envelope"></i>
+                                </div>
+                                <div className="div">
+                                        <h5>Email</h5>
+                                        <input type="email" className="input" required value={this.state.email} onChange={this.onChangeUsername}/>
+                                </div>
                             </div>
-                            <div className="div">
-                                    <h5>Username</h5>
-                                    <input type="text" value = {this.state.username} onChange = {this.onChangeUsername} className="input"/>
-                            </div>
-                            </div>
-                                <div className="input-div pass">
+                            <div className="input-div pass">
                                 <div className="i"> 
                                         <i className="fas fa-lock"></i>
                                 </div>
                                 <div className="div">
                                         <h5>Password</h5>
-                                        <input type="password" value = {this.state.password} onChange = {this.onchangePassword} className="input"/>
+                                        <input type="password" className="input" required value={this.state.password} onChange={this.onchangePassword}/>
                                 </div>
                             </div>
-                            <div className = "row">
-                                <div className = "col-sm-6 col-xs-12">
-                                    <div className = "remember">
-                                        <input type = "checkbox" checked = {this.state.remember} onChange = {this.onChangeRemember} />
-                                            &nbsp;<label>Remember Me</label>
-                                    </div>
+                            <div className="remember">
+                                <input type="checkbox" checked={this.state.remember} onChange={this.onChangeRemember}/>
+                                &nbsp;<label> Remember me</label>
+                            </div>
+                            <div className="row">
+                                <div className="col-xs-12 col-sm-6">
+                                    <Link to={"/register"} className="register-link">New User? Click here</Link>
                                 </div>
-                                <div className = "col-sm-6 col-xs-12">
-                                <Link to = {"/forgotpass"}>Forgot Password?</Link>
+                                <div className="col-xs-12 col-sm-6">
+                                    <Link to={"/forgot_pass"} className="forgot-link">Forgot Password?</Link>
                                 </div>
                             </div>
-                            <input type="submit" className="btn" value="Login"/>
+                            <input type="submit" className="btn" value="Login" />
                         </form>
                     </div>
                 </div>
             </div>
-        )
+            </div>     
+        );
     }
 }
 export default connect(stateToProps,dispatchToProps) (Login)

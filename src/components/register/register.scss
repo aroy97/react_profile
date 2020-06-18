@@ -225,5 +225,32 @@ a:hover{
 
 	.login-content{
 		justify-content: center;
+		
 	}
 }
+
+@media screen and (max-width: 900px){
+	.login-body{
+		.container{
+			grid-template-columns: 1fr;
+			padding: 0;
+		}
+
+		.img{
+			display: none;
+		}
+
+		.wave{
+			display: none;
+		}
+
+		.login-content{
+			justify-content: center;
+			.register-link, .forgot-link{
+				text-align: center;
+				margin-top: 1rem;
+			}
+		}
+	}
+}
+
