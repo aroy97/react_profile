@@ -29,6 +29,12 @@ class Profile extends Component {
         this.changeDetails = this.changeDetails.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.logout = this.logout.bind(this);
+        this.onChangeName = this.onChangeName.bind(this);
+        this.onChangePhone = this.onChangePhone.bind(this);
+        this.onChangeStatus = this.onChangeStatus.bind(this);
+        this.onChangeOldPassword = this.onChangeOldPassword.bind(this);
+        this.onChangeNewPassword = this.onChangeNewPassword.bind(this);
+        this.onChangeConfirmNewPassword = this.onChangeConfirmNewPassword.bind(this);
     }
 
     componentDidMount() {
@@ -72,6 +78,36 @@ class Profile extends Component {
 
     changePassword(e) {
         e.preventDefault();
+        this.setState({
+            modalShow: true
+        });
+        if (this.state.newpassword === this.state.confirmnewpasword) {
+            let payload = {
+                "token": this.props.token,
+                "oldPassword": this.state.oldpassword,
+                "newPassword": this.state.newpassword
+            }
+            axios.post(en.url + '/user/change_password', payload, en.authentication)
+            .then((res) => {
+                this.setState({
+                    modalShow: false
+                });
+                if (res.status === 200) {
+                    alert("Password has been changed successfully");
+                    localStorage.setItem('sessionToken', '');
+                    history.push('/');
+                } else {
+                    alert("Sorry, there was some error in changing password");
+                }
+            }).catch((err) => {
+                this.setState({
+                    modalShow: false
+                });
+                console.log(err);
+            })
+        }
+
+
     }
 
     changeDetails(e) {
@@ -177,6 +213,7 @@ class Profile extends Component {
                             <br />
                             <br />
                             <button className="my-2 btn btn-green-style" onClick={this.uploadProfilePic}>Upload Profile Picture</button>
+                            <br />
                             <br />
                             <button className="my-2 btn btn-green-style" onClick={this.logout}>Logout</button>
                             <br />
