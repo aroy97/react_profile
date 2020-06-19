@@ -39,7 +39,8 @@ class Profile extends Component {
     }
 
     componentDidMount() {
-        if (this.state.token === '' || this.state.token === null) {
+        console.log(this.state.token);
+        if (this.state.token === '' || this.state.token === null || this.state.token === undefined) {
             history.push("/");
         } else {
             let payload = {
