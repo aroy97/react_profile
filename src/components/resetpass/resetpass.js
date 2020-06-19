@@ -64,31 +64,28 @@ class ResetPass extends Component {
     onSubmitForm(e) {
         e.preventDefault();
         if (this.state.password === this.state.confirmpassword) {
-            const regexPwd = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
-            if (regexPwd.test(this.state.password)) {
-                let payload = {
-                    "token": this.state.token,
-                    "newPassword": this.state.password
-                }
-                axios.post(en.url + '/user/reset_password', payload, en.authentication)
-                .then((res) => {
-                    if (res.status === 200) {
-                        history.push('/');
-                    } else {
-                        alert('Failed to reset password.')
-                        this.setState({
-                            password: '',
-                            confirmpassword: ''
-                        });
-                    }
-                }).catch((err) => {
-                    console.log(err);
+            let payload = {
+                "token": this.state.token,
+                "newPassword": this.state.password
+            }
+            axios.post(en.url + '/user/reset_password', payload, en.authentication)
+            .then((res) => {
+                if (res.status === 200) {
+                    history.push('/');
+                } else {
+                    alert('Failed to reset password.')
                     this.setState({
                         password: '',
                         confirmpassword: ''
-                    })
+                    });
+                }
+            }).catch((err) => {
+                console.log(err);
+                this.setState({
+                    password: '',
+                    confirmpassword: ''
                 })
-            }
+            })
         }
     }
 

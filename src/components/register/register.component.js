@@ -159,38 +159,29 @@ class Register extends Component {
         e.preventDefault();
         if (this.state.password === this.state.confirmpassword) {
             if(this.state.mobile.length === 10) {
-                const regexPwd = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
-                if (regexPwd.test(this.state.password)) {
-                    let payload = {
-                    "username": this.state.name,
-                    "password": sha256(this.state.password),
-                    "email": this.state.emailid,
-                    "pic": this.state.img,
-                    "mobile": this.state.mobile,
-                    "status": "Hey There! I am using React."
-                    }
-                    this.setState({
-                        modalShow: true
-                    })
-                    axios.post(en.url+ '/user/register', payload, en.authentication)
-                    .then(() => {
-                        this.setState({
-                            modalShow: false
-                        });
-                        history.push('/');
-                    }).catch((err) => {
-                        console.log(err);
-                        this.setState({
-                            modalShow: false
-                        })
-                    })
-                } else {
-                    alert('Set stronger password');
-                    this.setState({
-                        password: '',
-                        confirmpassword: ''
-                    });
+                let payload = {
+                "username": this.state.name,
+                "password": sha256(this.state.password),
+                "email": this.state.emailid,
+                "pic": this.state.img,
+                "mobile": this.state.mobile,
+                "status": "Hey There! I am using React."
                 }
+                this.setState({
+                    modalShow: true
+                })
+                axios.post(en.url+ '/user/register', payload, en.authentication)
+                .then(() => {
+                    this.setState({
+                        modalShow: false
+                    });
+                    history.push('/');
+                }).catch((err) => {
+                    console.log(err);
+                    this.setState({
+                        modalShow: false
+                    })
+                })
             } else {
                 alert('Mobile number should be 10 digits long');
                 this.setState({
