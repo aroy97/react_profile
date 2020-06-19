@@ -28,6 +28,7 @@ class Profile extends Component {
         this.changePassword = this.changePassword.bind(this);
         this.changeDetails = this.changeDetails.bind(this);
         this.handleChange = this.handleChange.bind(this);
+        this.logout = this.logout.bind(this);
     }
 
     componentDidMount() {
@@ -61,6 +62,12 @@ class Profile extends Component {
                 console.log(err);
             });
         }
+    }
+
+    logout(e) {
+        e.preventDefault();
+        localStorage.setItem('sessionToken', '');
+        history.push("/");
     }
 
     changePassword(e) {
@@ -171,6 +178,8 @@ class Profile extends Component {
                             <br />
                             <button className="my-2 btn btn-green-style" onClick={this.uploadProfilePic}>Upload Profile Picture</button>
                             <br />
+                            <button className="my-2 btn btn-green-style" onClick={this.logout}>Logout</button>
+                            <br />
                         </div>
                         <div className="col-12 col-lg-9 py-2">
                             <h2 className="text-center styled-h2">Account Settings</h2>
@@ -212,9 +221,9 @@ class Profile extends Component {
                                             </div>
                                         </div>
                                     </form>
+                                </div>
                             </div>
-                        </div>
-                        <hr/>
+                            <hr/>
                             <div className="row">
                                 <div className="col">
                                     <p className = "styled-p" ><span className="fa fa-user"></span> Change Details</p>
