@@ -5,6 +5,7 @@ import en from '../../environment';
 import { stateToProps, dispatchToProps } from '../../reducerFunction';
 import { connect } from 'react-redux';
 import history from '../../history';
+import { sha256 } from 'js-sha256';
 
 class Profile extends Component {
     constructor(props) {
@@ -84,8 +85,8 @@ class Profile extends Component {
         if (this.state.newpassword === this.state.confirmnewpasword) {
             let payload = {
                 "token": this.props.token,
-                "oldPassword": this.state.oldpassword,
-                "newPassword": this.state.newpassword
+                "oldPassword": sha256(this.state.oldpassword),
+                "newPassword": sha256(this.state.newpassword)
             }
             axios.post(en.url + '/user/change_password', payload, en.authentication)
             .then((res) => {
