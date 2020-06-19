@@ -230,13 +230,13 @@ class Profile extends Component {
 
     render() {
         return (
-            <div className="main">
+            <div className="main-profile">
                 {this.state.modalShow && <div className="spinner-body">
                     <div className="spinner-border text-success" role="status"></div>
                 </div>}
                 <div className="container">
                     <div className="row">
-                        <div className="col-12 col-lg-3 py-2 text-center">
+                        <div className="col-xs-12 col-lg-3 py-2 text-center">
                             <img className = "styled-img" src={this.state.profilepic} alt = "profilepic"/>
                             <br />
                             <h2>{this.state.name}</h2>
@@ -254,7 +254,7 @@ class Profile extends Component {
                             <button className="my-2 btn btn-green-style" onClick={this.logout}>Logout</button>
                             <br />
                         </div>
-                        <div className="col-12 col-lg-9 py-2">
+                        <div className="col-xs-12 col-lg-9 py-2">
                             <h2 className="text-center styled-h2">Account Settings</h2>
                             <hr />
                             <div className="row">
