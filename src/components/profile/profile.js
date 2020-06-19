@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import history from '../../history';
 import { sha256 } from 'js-sha256';
 
+
 class Profile extends Component {
     constructor(props) {
         super(props);
