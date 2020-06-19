@@ -158,7 +158,7 @@ class Register extends Component {
     registerUser(e){
         e.preventDefault();
         if (this.state.password === this.state.confirmpassword) {
-            if(this.state.mobile.length === 10) {
+            if(this.state.mobile.toString().length === 10) {
                 let payload = {
                 "username": this.state.name,
                 "password": sha256(this.state.password),

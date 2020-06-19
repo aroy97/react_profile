@@ -10,14 +10,12 @@ export const stateToProps = (state) => {
 export const dispatchToProps = (dispatch) => {
     return {
         setToken: (token) => {
-            console.log(token);
             dispatch({
                 type: "loginModule",
                 token: token
             })
         },
         setSession:(session) => {
-            console.log(session);
             dispatch({
                 type: "SessionModule",
                 sessionData: {

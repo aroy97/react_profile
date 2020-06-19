@@ -39,7 +39,6 @@ class Profile extends Component {
     }
 
     componentDidMount() {
-        console.log(this.state.token);
         if (this.state.token === '' || this.state.token === null || this.state.token === undefined) {
             history.push("/");
         } else {
@@ -60,7 +59,8 @@ class Profile extends Component {
                         phone: res.data["mobile"],
                         status: res.data["status"],
                         newName: res.data["username"],
-                        profilepic: res.data["profilepic"]
+                        profilepic: res.data["profilepic"],
+                        statusold: res.data["status"]
                     });
                 }
             }).catch((err) => {
@@ -114,39 +114,38 @@ class Profile extends Component {
 
     changeDetails(e) {
         e.preventDefault();
-        this.setState({
-            modalShow: true
-        });
-        if (this.state.newpassword === this.state.confirmnewpasword) {
-            if (this.state.phone.length !== 10) {
-                alert('Phone number should be of 10 digits');
-            } else {
-                let payload = {
-                    "token": this.props.token,
-                    "username": this.state.newName,
-                    "mobile": this.state.phone,
-                    "status": this.state.status
-                }
-                axios.post(en.url + '/user/update_details', payload, en.authentication)
-                .then((res) => {
-                    this.setState({
-                        modalShow: false
-                    });
-                    if (res.status === 200) {
-                        alert("Details have been changed successfully");
-                        this.setState({
-                            name: this.state.newName
-                        })
-                    } else {
-                        alert("Sorry, there was some error in changing details");
-                    }
-                }).catch((err) => {
-                    this.setState({
-                        modalShow: false
-                    });
-                    console.log(err);
-                });
+        if (this.state.phone.toString().length !== 10) {
+            alert('Phone number should be of 10 digits');
+        } else {
+            this.setState({
+                modalShow: true
+            });
+            let payload = {
+                "token": this.props.token,
+                "username": this.state.newName,
+                "mobile": this.state.phone,
+                "status": this.state.status
             }
+            axios.post(en.url + '/user/update_details', payload, en.authentication)
+            .then((res) => {
+                this.setState({
+                    modalShow: false
+                });
+                if (res.status === 200) {
+                    alert("Details have been changed successfully");
+                    this.setState({
+                        name: this.state.newName,
+                        statusold: this.state.status
+                    })
+                } else {
+                    alert("Sorry, there was some error in changing details");
+                }
+            }).catch((err) => {
+                this.setState({
+                    modalShow: false
+                });
+                console.log(err);
+            });
         }
 
     }
@@ -241,7 +240,7 @@ class Profile extends Component {
                             <img className = "styled-img" src={this.state.profilepic} alt = "profilepic"/>
                             <br />
                             <h2>{this.state.name}</h2>
-                            <h5>{this.state.email}</h5>
+                            <h5>{this.state.statusold}</h5>
                             <br />
                             <label className="custom-file-upload btn">
                                 <input type="file" onChange={this.handleChange}/>

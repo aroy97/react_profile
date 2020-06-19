@@ -60,7 +60,6 @@ class Login extends Component {
                 modalShow: false
             });
             if (res.status === 200) {
-                console.log(res.data);
                 this.props.setSession(res.data);
                 this.props.setToken(this.state.token);
                 this.setState({
@@ -104,9 +103,7 @@ class Login extends Component {
         })
         axios.post(en.url + "/user/login",payload, en.authentication)
         .then(res => {
-            console.log(res.data.token);
             if(res.status === 200){
-                console.log(payload);
                 if(payload['email'] === "admin@admin"){
                     history.push('/admin');
                 }
@@ -131,6 +128,9 @@ class Login extends Component {
         .catch(function(error){
             alert("Something went wrong");
             console.log(error);
+            this.setState({
+                modalShow: true
+            });
         });
     }
 
