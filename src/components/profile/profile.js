@@ -113,6 +113,41 @@ class Profile extends Component {
 
     changeDetails(e) {
         e.preventDefault();
+        this.setState({
+            modalShow: true
+        });
+        if (this.state.newpassword === this.state.confirmnewpasword) {
+            if (this.state.phone.length !== 10) {
+                alert('Phone number should be of 10 digits');
+            } else {
+                let payload = {
+                    "token": this.props.token,
+                    "username": this.state.newName,
+                    "mobile": this.state.phone,
+                    "status": this.state.status
+                }
+                axios.post(en.url + '/user/update_details', payload, en.authentication)
+                .then((res) => {
+                    this.setState({
+                        modalShow: false
+                    });
+                    if (res.status === 200) {
+                        alert("Details have been changed successfully");
+                        this.setState({
+                            name: this.state.newName
+                        })
+                    } else {
+                        alert("Sorry, there was some error in changing details");
+                    }
+                }).catch((err) => {
+                    this.setState({
+                        modalShow: false
+                    });
+                    console.log(err);
+                });
+            }
+        }
+
     }
 
     onChangeName(e) {
