@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
 import './profile.scss';
-import { Link } from 'react-router-dom';
-import { sha256 } from 'js-sha256';
 import en from '../../environment';
 import { stateToProps, dispatchToProps } from '../../reducerFunction';
 import { connect } from 'react-redux';
@@ -21,18 +19,48 @@ class Profile extends Component {
             newName: '',
             phone: '',
             status: '',
-            sellersPermitFile: ''
+            file: '',
+            base64: '',
+            modalShow: false,
+            token: this.props.token
         };
         this.uploadProfilePic = this.uploadProfilePic.bind(this);
         this.changePassword = this.changePassword.bind(this);
         this.changeDetails = this.changeDetails.bind(this);
-        this.selectProfilePic = this.selectProfilePic.bind(this);
-        this.handleInputChange = this.handleInputChange.bind(this);
-        this.handleReaderLoaded = this.handleReaderLoaded.bind(this);
+        this.handleChange = this.handleChange.bind(this);
     }
 
-    uploadProfilePic(e) {
-        e.preventDefault();
+    componentDidMount() {
+        if (this.state.token === '' || this.state.token === null) {
+            history.push("/");
+        } else {
+            let payload = {
+                "token": this.props.token
+            }
+            this.setState({
+                modalShow: true
+            })
+            axios.post(en.url + "/user/get_user_details", payload, en.authentication)
+            .then((res) => {
+                this.setState({
+                    modalShow: false
+                })
+                if (res.status === 200) {
+                    this.setState({
+                        name: res.data["username"],
+                        phone: res.data["mobile"],
+                        status: res.data["status"],
+                        newName: res.data["username"],
+                        profilepic: res.data["profilepic"]
+                    });
+                }
+            }).catch((err) => {
+                this.setState({
+                    modalShow: false
+                });
+                console.log(err);
+            });
+        }
     }
 
     changePassword(e) {
@@ -79,80 +107,66 @@ class Profile extends Component {
         });
     }
 
-    selectProfilePic(e) {
-        e.preventDefault();
-        let fileList = e.target.files;
-        if (fileList.length > 0) {
-            const file = fileList[0];
-            this.setState({
-                sellersPermitFile: file
-            });
-            console.log(this.state.sellersPermitFile);
-            console.log('file taken');
-            // this.handleInputChange(file);
+    handleChange(e) {
+        let file = e.target.files[0];
+        let reader = new FileReader();
+        let pattern1 = /image-*/;
+        if (!file.type.match(pattern1)) {
+            alert('invalid format');
+        } else {
+            reader.readAsDataURL(file);
+            reader.onloadend = () => {
+                this.setState({
+                    file: URL.createObjectURL(file),
+                    profilepic: reader.result
+                });
+            }
         }
-        else {
-            alert("No file selected");
-        }   
     }
 
-    handleInputChange(files) {
-        var file = files;
-        this.submitEnable=true;
-        var pattern1 = /image-*/;
-        var reader = new FileReader();
-        this.imgURL = "";
-        if (!file.type.match(pattern1)) {
-          alert('invalid format');
-          return;
-        }
-        reader.onload = (_event) => { 
-          this.imgURL = reader.result; 
-        }
-        reader.onloadend = this.handleReaderLoaded.bind(this);
-        reader.readAsDataURL(file);
+    uploadProfilePic() {
+        this.setState({
+            modalShow: true
+        });
+          let finalJson = {
+            "pic": this.state.profilepic,
+            "token": this.state.token
+          }
+          axios.post(en.url + '/user/update_picture', finalJson, en.authentication)
+          .then((res) => {
+            this.setState({
+                modalShow: false
+            });
+            if (res.status === 200) {
+                alert('Profile picture updated');
+            }
+          }).catch((err) => {
+              console.log(err);
+              this.setState({
+                modalShow: false
+            });
+          })
       }
-
-      handleReaderLoaded(e) {
-        let reader = e.target;
-        var base64result = reader.result.substr(reader.result.indexOf(',') + 1);
-        this.sellersPermitString = base64result;
-      }
-
-    //   addPictures() {
-    //     this.apicall = true;
-    //       this.finalJson = {
-    //         "card": this.sellersPermitString,
-    //         "token": this.token
-    //       }
-    //       this.apicallService.postID(this.finalJson
-    //       ).then((response: HttpResponse<any>) => {
-    //         console.log(response);
-    //         this.apicall = false;
-    //         if(response.status == 200) {
-    //           this.router.navigate(['../purchase'], { relativeTo: this.route }).catch();
-    //         }
-    //       }).catch((err: any) => {
-    //         this.apicall = false;
-    //         // this.router.navigate(['../heatmap'], { relativeTo: this.route }).catch();
-    //         console.log(err);
-    //       })
-    //   }
 
 
     render() {
-        console.log(this.state.profilepic);
         return (
             <div className="main">
+                {this.state.modalShow && <div className="spinner-body">
+                    <div className="spinner-border text-success" role="status"></div>
+                </div>}
                 <div className="container">
                     <div className="row">
                         <div className="col-12 col-lg-3 py-2 text-center">
-                            <img className = "styled-img" src={this.state.profilepic} />
+                            <img className = "styled-img" src={this.state.profilepic} alt = "profilepic"/>
                             <br />
                             <h2>{this.state.name}</h2>
                             <h5>{this.state.email}</h5>
                             <br />
-                            <input className="my-2 btn btn-green-style" type = "file" onClick={this.selectProfilePic}/>Select Profile Picture
+                            <label className="custom-file-upload btn">
+                                <input type="file" onChange={this.handleChange}/>
+                                Select Profile Picture
+                            </label>
                             <br />
                             <br />
                             <button className="my-2 btn btn-green-style" onClick={this.uploadProfilePic}>Upload Profile Picture</button>

@@ -52,6 +52,7 @@
 
     img{
         height: 200px;
+        width: 200px
     }
 
     h2{
@@ -74,5 +75,17 @@
 
     .btn-green-style {
         background-color: #38d39f !important;
+    }
+
+    input[type='file'] {
+        display: none;
+        // color: transparent;
+    }
+    .custom-file-upload {
+        border: 1px solid #ccc;
+        display: inline-block;
+        padding: 6px 12px;
+        cursor: pointer;
+        background-color: #38d39f;
     }
 }

@@ -41,7 +41,7 @@ class Login extends Component {
             input.addEventListener("focus", addcl);
             input.addEventListener("blur", remcl);
         });
-        if (this.state.token!= '' || this.state.token != null) {
+        if (this.state.token!== '' || this.state.token !== null) {
             this.checkToken();
         }
 
@@ -62,6 +62,7 @@ class Login extends Component {
             if (res.status === 200) {
                 console.log(res.data);
                 this.props.setSession(res.data);
+                this.props.setToken(this.state.token);
                 this.setState({
                     modalShow: false
                 })

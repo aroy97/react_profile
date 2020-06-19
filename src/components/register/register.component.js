@@ -157,8 +157,8 @@ class Register extends Component {
 
     registerUser(e){
         e.preventDefault();
-        if (this.state.password == this.state.confirmpassword) {
-            if(this.state.mobile.length == 10) {
+        if (this.state.password === this.state.confirmpassword) {
+            if(this.state.mobile.length === 10) {
                 const regexPwd = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
                 if (regexPwd.test(this.state.password)) {
                     let payload = {
@@ -213,10 +213,10 @@ class Register extends Component {
                     <div className="spinner-border text-success" role="status"></div>
                 </div>}
                 <div className="login-body">
-                    <img className="wave" src={require("../../assets/wave.png")}/>
+                    <img className="wave" src={require("../../assets/wave.png")} alt="background"/>
                     <div className="container">
                     <div className="img">
-                        <img src={require("../../assets/login.svg")}/>
+                        <img src={require("../../assets/login.svg")} alt="avatar"/>
                     </div>
                     {this.state.otpchecked && this.state.otpsent &&
                     <div className="login-content">
