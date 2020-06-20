@@ -4,6 +4,7 @@ import './resetpass.css';
 import { Link } from 'react-router-dom';
 import en from '../../environment';
 import history from '../../history';
+import { sha256 } from 'js-sha256';
 
 class ResetPass extends Component {
     constructor(props) {
@@ -66,7 +67,7 @@ class ResetPass extends Component {
         if (this.state.password === this.state.confirmpassword) {
             let payload = {
                 "token": this.state.token,
-                "newPassword": this.state.password
+                "newPassword": sha256(this.state.password)
             }
             axios.post(en.url + '/user/reset_password', payload, en.authentication)
             .then((res) => {
