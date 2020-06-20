@@ -5,7 +5,8 @@ const exportedJson = {
             password: 'admin'
         }
     },
-    url : 'https://react-profile-backend.herokuapp.com'
+    // url : 'http://localhost:5000'
+    url: 'https://react-profile-backend.herokuapp.com'
 
 }
 export default exportedJson

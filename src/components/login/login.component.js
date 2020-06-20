@@ -41,7 +41,7 @@ class Login extends Component {
             input.addEventListener("focus", addcl);
             input.addEventListener("blur", remcl);
         });
-        if (this.state.token!== '' || this.state.token !== null) {
+        if (this.state.token!== '' || this.state.token !== null || this.state.token !== undefined) {
             this.checkToken();
         }
 

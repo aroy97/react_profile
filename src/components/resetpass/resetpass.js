@@ -91,7 +91,7 @@ class ResetPass extends Component {
 
     render() {
         return (
-            <div className = "main">
+            <div className = "full">
                 <img className="wave" src={require("../../assets/wave.png")} alt= ''/>
                 {!this.state.validtoken &&
                 <div className= "container">
