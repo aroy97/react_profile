@@ -258,7 +258,7 @@ class Profile extends Component {
                 modalShow: false
             });
             if (res.status === 200) {
-                localStorage.setItem('sessionPic', resnew.data.profilepic);
+                localStorage.setItem('sessionPic', this.state.profilepic);
                 alert('Profile picture updated');
             }
           }).catch((err) => {
