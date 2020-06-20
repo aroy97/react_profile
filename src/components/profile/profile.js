@@ -37,40 +37,56 @@ class Profile extends Component {
         this.onChangeOldPassword = this.onChangeOldPassword.bind(this);
         this.onChangeNewPassword = this.onChangeNewPassword.bind(this);
         this.onChangeConfirmNewPassword = this.onChangeConfirmNewPassword.bind(this);
+        this.getUserDetails = this.getUserDetails.bind(this);
     }
 
     componentDidMount() {
         if (this.state.token === '' || this.state.token === null || this.state.token === undefined) {
-            history.push("/");
+            if (localStorage.getItem('sessionToken') === '' || localStorage.getItem('sessionToken') === null ||localStorage.getItem('sessionToken') === undefined) {   
+                history.push("/");
+            } else {
+                let payload = {
+                    "token": localStorage.getItem('sessionToken')
+                }
+                this.setState({
+                    token: localStorage.getItem('sessionToken')
+                });
+                this.getUserDetails(payload);
+            }
         } else {
             let payload = {
                 "token": this.props.token
             }
-            this.setState({
-                modalShow: true
-            })
-            axios.post(en.url + "/user/get_user_details", payload, en.authentication)
-            .then((res) => {
-                this.setState({
-                    modalShow: false
-                })
-                if (res.status === 200) {
-                    this.setState({
-                        name: res.data["username"],
-                        phone: res.data["mobile"],
-                        status: res.data["status"],
-                        newName: res.data["username"],
-                        profilepic: res.data["profilepic"],
-                        statusold: res.data["status"]
-                    });
-                }
-            }).catch((err) => {
-                this.setState({
-                    modalShow: false
-                });
-                console.log(err);
-            });
+            this.getUserDetails(payload);
         }
+    }
+
+    getUserDetails(payload) {
+        this.setState({
+            modalShow: true
+        });
+        axios.post(en.url + "/user/get_user_details", payload, en.authentication)
+        .then((res) => {
+            this.setState({
+                modalShow: false
+            })
+            if (res.status === 200) {
+                this.props.setToken(this.state.token);
+                this.setState({
+                    name: res.data["username"],
+                    phone: res.data["mobile"],
+                    status: res.data["status"],
+                    newName: res.data["username"],
+                    profilepic: res.data["profilepic"],
+                    statusold: res.data["status"]
+                });
+            }
+        }).catch((err) => {
+            this.setState({
+                modalShow: false
+            });
+            console.log(err);
+        });
     }
 
     logout(e) {
