@@ -20,8 +20,17 @@ export const dispatchToProps = (dispatch) => {
                 type: "SessionModule",
                 sessionData: {
                     userName: session.username,
-                    profilePic: session.profilepic,
+                    // profilePic: session.profilepic,
                     lastLoggedIn: session.lastLoggedIn
+                }
+            })
+        },
+        setPicture:(pic) => {
+            console.log(pic);
+            dispatch({
+                type: "PhotoModule",
+                photoData: {
+                    profilePic: pic.profilepic
                 }
             })
         }

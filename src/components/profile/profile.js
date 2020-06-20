@@ -59,6 +59,29 @@ class Profile extends Component {
             }
             this.getUserDetails(payload);
         }
+        if (this.state.profilepic === '' || this.state.profilepic === null || this.state.profilepic === undefined) {
+            if (localStorage.getItem('sessionPic') === '' || localStorage.getItem('sessionPic') === null ||localStorage.getItem('sessionPic') === undefined) {   
+                let payload = {
+                    "token": this.state.token
+                };
+                axios.post(en.url + '/user/get_user_picture', payload, en.authentication)
+                .then((resnew) => {
+                    if (resnew.status === 200) {
+                        this.props.setPicture(resnew.data.profilepic);
+                        localStorage.setItem('sessionPic', resnew.data.profilepic);
+                        this.setState({
+                            profilepic: resnew.data.profilepic
+                        });
+                    }
+                }).catch((err) => {
+                    console.log(err);
+                });
+            } else {
+                this.setState({
+                    profilepic: localStorage.getItem('sessionPic')
+                });
+            }
+        }
     }
 
     getUserDetails(payload) {
@@ -77,9 +100,10 @@ class Profile extends Component {
                     phone: res.data["mobile"],
                     status: res.data["status"],
                     newName: res.data["username"],
-                    profilepic: res.data["profilepic"],
                     statusold: res.data["status"]
                 });
+            } else {
+                history.push("/");
             }
         }).catch((err) => {
             this.setState({

@@ -64,6 +64,15 @@ class Login extends Component {
                 this.props.setToken(this.state.token);
                 this.setState({
                     modalShow: false
+                });
+                axios.post(en.url + '/user/get_user_picture', payload, en.authentication)
+                .then((resnew) => {
+                    if (resnew.status === 200) {
+                        this.props.setPicture(resnew.data.profilepic);
+                        localStorage.setItem('sessionPic', resnew.data.profilepic);
+                    }
+                }).catch((err) => {
+                    console.log(err);
                 })
                 history.push('/profile');
             }
@@ -125,11 +134,11 @@ class Login extends Component {
                 alert("Incorrect username or password");
             }
         })
-        .catch(function(error){
+        .catch((error) => {
             alert("Something went wrong");
             console.log(error);
             this.setState({
-                modalShow: true
+                modalShow: false
             });
         });
     }

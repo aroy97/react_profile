@@ -1,7 +1,7 @@
 const initialState = {
     userName: "",
-    profilePic: "",
-    lastLoggedIn: ""
+    lastLoggedIn: "",
+    profileVersion: 0
 };
 
 export const sessionReducer = (state = initialState, action) => {
@@ -9,8 +9,8 @@ export const sessionReducer = (state = initialState, action) => {
         case "SessionModule":
             return {
                 userName: action.sessionData.userName,
-                profilePic: action.sessionData.profilePic,
-                lastLoggedIn: action.sessionData.lastLoggedIn
+                lastLoggedIn: action.sessionData.lastLoggedIn,
+                profileVersion: action.sessionData.profileversion
             }
         default:
             return {
