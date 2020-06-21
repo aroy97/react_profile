@@ -3,7 +3,8 @@ export const stateToProps = (state) => {
         token: state.login.token,
         userName: state.session.userName,
         profilePic: state.session.profilePic,
-        lastLoggedIn: state.session.lastLoggedIn
+        lastLoggedIn: state.session.lastLoggedIn,
+        profileVersion: state.session.profileVersion
     }
 }
 
@@ -20,17 +21,9 @@ export const dispatchToProps = (dispatch) => {
                 type: "SessionModule",
                 sessionData: {
                     userName: session.username,
-                    // profilePic: session.profilepic,
-                    lastLoggedIn: session.lastLoggedIn
-                }
-            })
-        },
-        setPicture:(pic) => {
-            console.log(pic);
-            dispatch({
-                type: "PhotoModule",
-                photoData: {
-                    profilePic: pic.profilepic
+                    profilePic: session.profilepic,
+                    lastLoggedIn: session.lastLoggedIn,
+                    profileVersion: session.profileversion
                 }
             })
         }

@@ -12,12 +12,10 @@ import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 import { loginReducer } from './reducer/login-reducer';
 import { sessionReducer } from './reducer/session-reducer';
-import { profileReducer } from './reducer/profile-pic-reducer';
 
 const reducers = combineReducers({
   login: loginReducer,
-  session: sessionReducer,
-  profile: profileReducer
+  session: sessionReducer
 });
 
 const store = createStore(reducers);

@@ -65,15 +65,6 @@ class Login extends Component {
                 this.setState({
                     modalShow: false
                 });
-                axios.post(en.url + '/user/get_user_picture', payload, en.authentication)
-                .then((resnew) => {
-                    if (resnew.status === 200) {
-                        this.props.setPicture(resnew.data.profilepic);
-                        localStorage.setItem('sessionPic', resnew.data.profilepic);
-                    }
-                }).catch((err) => {
-                    console.log(err);
-                })
                 history.push('/profile');
             }
         })

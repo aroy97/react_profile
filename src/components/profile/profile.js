@@ -6,6 +6,7 @@ import { stateToProps, dispatchToProps } from '../../reducerFunction';
 import { connect } from 'react-redux';
 import history from '../../history';
 import { sha256 } from 'js-sha256';
+import {Image, CloudinaryContext} from 'cloudinary-react';
 
 
 class Profile extends Component {
@@ -15,6 +16,7 @@ class Profile extends Component {
             name: this.props.userName,
             email: '',
             profilepic: this.props.profilePic,
+            profileversion: this.props.profileVersion,
             oldpassword: '',
             newpassword: '',
             confirmnewpasword: '',
@@ -24,7 +26,9 @@ class Profile extends Component {
             file: '',
             base64: '',
             modalShow: false,
-            token: this.props.token
+            token: this.props.token,
+            updated: false,
+            cloud: ''
         };
         this.uploadProfilePic = this.uploadProfilePic.bind(this);
         this.changePassword = this.changePassword.bind(this);
@@ -59,29 +63,6 @@ class Profile extends Component {
             }
             this.getUserDetails(payload);
         }
-        if (this.state.profilepic === '' || this.state.profilepic === null || this.state.profilepic === undefined) {
-            if (localStorage.getItem('sessionPic') === '' || localStorage.getItem('sessionPic') === null ||localStorage.getItem('sessionPic') === undefined) {   
-                let payload = {
-                    "token": this.state.token
-                };
-                axios.post(en.url + '/user/get_user_picture', payload, en.authentication)
-                .then((resnew) => {
-                    if (resnew.status === 200) {
-                        this.props.setPicture(resnew.data.profilepic);
-                        localStorage.setItem('sessionPic', resnew.data.profilepic);
-                        this.setState({
-                            profilepic: resnew.data.profilepic
-                        });
-                    }
-                }).catch((err) => {
-                    console.log(err);
-                });
-            } else {
-                this.setState({
-                    profilepic: localStorage.getItem('sessionPic')
-                });
-            }
-        }
     }
 
     getUserDetails(payload) {
@@ -100,8 +81,11 @@ class Profile extends Component {
                     phone: res.data["mobile"],
                     status: res.data["status"],
                     newName: res.data["username"],
-                    statusold: res.data["status"]
+                    statusold: res.data["status"],
+                    profilepic: res.data["profilepic"],
+                    profileversion: res.data["profileversion"]
                 });
+                console.log(this.state);
             } else {
                 history.push("/");
             }
@@ -237,8 +221,9 @@ class Profile extends Component {
             reader.readAsDataURL(file);
             reader.onloadend = () => {
                 this.setState({
+                    updated: true,
                     file: URL.createObjectURL(file),
-                    profilepic: reader.result
+                    cloud: reader.result
                 });
             }
         }
@@ -249,7 +234,7 @@ class Profile extends Component {
             modalShow: true
         });
           let finalJson = {
-            "pic": this.state.profilepic,
+            "pic": this.state.cloud,
             "token": this.state.token
           }
           axios.post(en.url + '/user/update_picture', finalJson, en.authentication)
@@ -258,7 +243,6 @@ class Profile extends Component {
                 modalShow: false
             });
             if (res.status === 200) {
-                localStorage.setItem('sessionPic', this.state.profilepic);
                 alert('Profile picture updated');
             }
           }).catch((err) => {
@@ -279,7 +263,10 @@ class Profile extends Component {
                 <div className="container">
                     <div className="row">
                         <div className="col-xs-12 col-lg-3 py-2 text-center">
-                            <img className = "styled-img" src={this.state.profilepic} alt = "profilepic"/>
+                            {!this.state.updated && <CloudinaryContext cloudName = 'profilechatify'>
+                                <Image publicId = {this.state.profilepic} version = {this.state.profileversion}/>
+                                </CloudinaryContext>}
+                            {this.state.updated && <img className = "styled-img" src={this.state.file} alt = "profilepic"/>}
                             <br />
                             <h2>{this.state.name}</h2>
                             <h5>{this.state.statusold}</h5>
