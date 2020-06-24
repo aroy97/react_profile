@@ -65,7 +65,7 @@ class Login extends Component {
                 this.setState({
                     modalShow: false
                 });
-                history.push('/profile');
+                history.push('/home');
             }
         })
         .catch(function(error){
