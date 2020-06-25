@@ -10,7 +10,8 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import MoreVertIcon from "@material-ui/icons/MoreVert";
 import history from '../../../history';
-import { SetToken, SetSession } from '../../../actions/login';
+import {Image, CloudinaryContext} from 'cloudinary-react';
+import { SetChat } from '../../../actions/chat';
 import axios from 'axios';
 import en from '../../../environment';
 
@@ -30,43 +31,41 @@ export default function Contacts() {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
   const tokens = useSelector(state => state.login.token);
-  const [token, setToken] = useState(tokens);
-  const [modal, setModal] = useState(false);
+  const [modalShow, setModal] = useState(false);
+  const pictures = useSelector(state => state.session.profilePic);
+  const versions = useSelector(state => state.session.profileVersion);
+  const [token, setToken] = useState("");
+  const [picture, setPicture] = useState("");
+  const [picVersion, setPicVersion] = useState("");
+  const [contactList, setcontactList] = useState([ ]);
 
 
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (token === '' || token === null || token === undefined) {
-        if (localStorage.getItem('sessionToken') === '' || localStorage.getItem('sessionToken') === null ||localStorage.getItem('sessionToken') === undefined) {   
-            history.push("/");
-        } else {
-            setToken(localStorage.getItem('sessionToken'));
-            dispatch(SetToken(localStorage.getItem('sessionToken')));
-            getPicture();
-        }
-    }
-  }, [token, dispatch]);
+    setToken(tokens);
+    setPicture(pictures);
+    setPicVersion(versions);
+  },[tokens, pictures, versions]);
 
-  const getPicture = () => {
-    let payload = {
-        "token": token
-    }
+  useEffect(() => {
     setModal(true);
-    axios.post(en.url + '/user/get_session', payload, en.authentication)
+    axios.get(en.url + '/user/get_contacts', en.authentication)
     .then((res) => {
-        setModal(false)
-        if (res.status === 200) {
-            dispatch(SetSession(res.data));
-        } else {
-            history.push('/');
-        }
+      setModal(false);
+      if (res.status === 200) {
+          setcontactList(res.data);
+      } else {
+          history.push("/");
+      }
     })
     .catch(function(error){
-        alert("Something went wrong");
-        console.log(error);
+      setModal(false);
+      alert("Something went wrong");
+      console.log(error);
     });
-};
+  },[token]);
+
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -87,13 +86,23 @@ export default function Contacts() {
     history.push('/profile')
   }
 
+  const chatBegins = (contact) => {
+    console.log(contact);
+    dispatch(SetChat(contact.username, contact.email, contact.profilepic, contact.profilepicversion));
+  }
+
 
   return (
     <div className = "contacts-body">
+        {modalShow && <div className="spinner-body">
+            <div className="spinner-border text-success" role="status"></div>
+        </div>}
         <div className={classes.root}>
         <AppBar position="static">
             <Toolbar>
-            Pic &nbsp;
+            <CloudinaryContext cloudName="profilechatify">
+                <Image publicId={picture} version={picVersion} />
+            </CloudinaryContext> &nbsp;
             <Typography variant="h6" className={classes.title}>
                 Profile
             </Typography>
@@ -117,7 +126,24 @@ export default function Contacts() {
             </Toolbar>
         </AppBar>
         </div>
-        {/* <button onClick = {() => dispatch(SetToken())}>Click</button> */}
+        <div className="contact-list">
+            {contactList.map((contact) => {
+                return(
+                <div className="contact" key={contact.email}>
+                  <div className = "row">
+                    <div className = "col-sm-2">
+                      <CloudinaryContext cloudName="profilechatify">
+                          <Image publicId={contact.profilepic} version={contact.profilepicversion} />
+                      </CloudinaryContext>
+                    </div>
+                    <div className = "col-sm-10 no-gutter">
+                      <p className = "contact-name" onClick ={() => chatBegins(contact)}>{contact.username}</p>
+                    </div>
+                  </div>
+                </div>
+                )
+            })}
+        </div>
     </div>
   );
 }

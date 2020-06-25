@@ -13,10 +13,12 @@ import { Provider } from 'react-redux';
 import { createStore, combineReducers } from 'redux';
 import { loginReducer } from './reducer/login-reducer';
 import { sessionReducer } from './reducer/session-reducer';
+import { chatReducer } from './reducer/chat-reducer';
 
 const reducers = combineReducers({
   login: loginReducer,
-  session: sessionReducer
+  session: sessionReducer,
+  chat: chatReducer
 });
 
 const store = createStore(reducers, window._REDUX_DEVTOOLS_EXTENSION_ && window._REDUX_DEVTOOLS_EXTENSION_());

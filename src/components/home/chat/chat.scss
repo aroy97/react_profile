@@ -1,0 +1,21 @@
+.chat-body{
+    .MuiAppBar-colorPrimary {
+        background-color: rgb(237, 237, 237);
+        .MuiToolbar-gutters {
+            padding-right: 0;
+        }
+        .makeStyles-title-3 {
+            text-align: center;
+        }
+        .makeStyles-title-6{
+            color: black;
+            padding-left: 2%;
+        }
+    }
+
+    img{
+        height: 50px;
+        width: 50px;
+        border-radius: 50%;
+    }
+}
